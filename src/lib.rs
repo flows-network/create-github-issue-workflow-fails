@@ -24,31 +24,29 @@ async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
 
     match payload {
         EventPayload::WorkflowRunEvent(e) => {
-            if e.action == WorkflowRunEventAction::Requested {
-                return;
-            }
+            if e.action == WorkflowRunEventAction::Completed {
+                let workflow = e.workflow;
+                let state = workflow.state;
 
-            let workflow = e.workflow;
-            send_message_to_channel("ik8", "ch_in", workflow.html_url.to_string());
-            let state = workflow.state;
+                if state == String::from("failure") || state == String::from("error") {
+                    let id = workflow.id.to_string().parse::<u64>().unwrap();
+                    let title = workflow.name;
+                    let html_url = workflow.html_url;
+                    let body = format!("Workflow: {title} {state}\n @{html_url} \n");
+                send_message_to_channel("ik8", "ch_in", html_url.to_string());
 
-            if state == String::from("failure") || state == String::from("error") {
-                let id = workflow.id.0;
-                let title = workflow.name;
-                let html_url = workflow.html_url;
-                let body = format!("Workflow: {title} {state}\n @{html_url} \n");
-
-                match issues.create_comment(id, body).await {
-                    Ok(comment) => {
-                        send_message_to_channel("ik8", "ch_out", comment.body_text.unwrap());
-                    }
-                    Err(e) => {
-                        write_error_log!(e.to_string());
-                        send_message_to_channel("ik8", "ch_err", e.to_string());
-                    }
-                };
-            } else {
-                return;
+                    match issues.create_comment(id, body).await {
+                        Ok(comment) => {
+                            send_message_to_channel("ik8", "ch_out", comment.body_text.unwrap());
+                        }
+                        Err(e) => {
+                            write_error_log!(e.to_string());
+                            send_message_to_channel("ik8", "ch_err", e.to_string());
+                        }
+                    };
+                } else {
+                    return;
+                }
             }
         }
         _ => return,
