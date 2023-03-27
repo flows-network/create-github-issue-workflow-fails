@@ -29,10 +29,10 @@ async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
             }
 
             let workflow = e.workflow;
+            send_message_to_channel("ik8", "ch_in", workflow.html_url.to_string());
             let state = workflow.state;
-            send_message_to_channel("ik8", "ch_in", text.to_string());
 
-            if state == String::from("failure") || workflow.state == String::from("error") {
+            if state == String::from("failure") || state == String::from("error") {
                 let id = workflow.id.0;
                 let title = workflow.name;
                 let html_url = workflow.html_url;
@@ -40,7 +40,7 @@ async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
 
                 match issues.create_comment(id, body).await {
                     Ok(comment) => {
-                        send_message_to_channel("ik8", "ch_out", comment.to_string());
+                        send_message_to_channel("ik8", "ch_out", comment.body_text.unwrap());
                     }
                     Err(e) => {
                         write_error_log!(e.to_string());
