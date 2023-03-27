@@ -12,7 +12,7 @@ pub async fn run() {
     let owner = "jaykchen";
     let repo = "a-test";
 
-    listen_to_event(&login, &owner, &repo, vec!["workflow_run", ""], |payload| {
+    listen_to_event(&login, &owner, &repo, vec!["workflow_run"], |payload| {
         handler(&login, &owner, &repo, payload)
     })
     .await;
@@ -25,18 +25,19 @@ async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
     match payload {
         EventPayload::WorkflowRunEvent(e) => {
             if e.action == WorkflowRunEventAction::Completed {
-                let workflow = e.workflow;
-                let state = workflow.state;
+                let workflow_run = e.workflow_run;
+                let conclusion = workflow_run.conclusion.unwrap();
 
-                if state == String::from("failure") || state == String::from("error") {
-                    let id = workflow.id.to_string().parse::<u64>().unwrap();
-                    let title = workflow.name;
-                    let html_url = workflow.html_url;
-                    let body = format!("Workflow: {title} {state}\n @{html_url} \n");
-                send_message_to_channel("ik8", "ch_in", html_url.to_string());
+                if conclusion != String::from("success") {
+                    let title = workflow_run.name;
+                    let run_number = workflow_run.run_number;
+                    let html_url = workflow_run.html_url;
+                    let msg = format!(
+                        "Workflow: {title} #{run_number}\n Status: {conclusion} \n{html_url} \n"
+                    );
+                    send_message_to_channel("ik8", "ch_in", html_url.to_string());
 
-
-                    match issues.create(body).send().await {
+                    match issues.create(msg).send().await {
                         Ok(comment) => {
                             send_message_to_channel("ik8", "ch_out", comment.body_text.unwrap());
                         }

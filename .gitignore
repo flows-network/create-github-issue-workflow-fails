@@ -3,3 +3,4 @@
 issue.closed.json
 workflowrun.completed.json
 workflowrun.completed.cancel.json
+workflowrun.completed.failure.json
