@@ -35,7 +35,8 @@ async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
                     let body = format!("Workflow: {title} {state}\n @{html_url} \n");
                 send_message_to_channel("ik8", "ch_in", html_url.to_string());
 
-                    match issues.create_comment(id, body).await {
+
+                    match issues.create(body).send().await {
                         Ok(comment) => {
                             send_message_to_channel("ik8", "ch_out", comment.body_text.unwrap());
                         }
