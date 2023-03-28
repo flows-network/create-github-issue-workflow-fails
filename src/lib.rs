@@ -1,7 +1,6 @@
 use flowsnet_platform_sdk::write_error_log;
 use github_flows::{
-    get_octo, listen_to_event,
-    octocrab::models::events::payload::WorkflowRunEventAction,
+    get_octo, listen_to_event, octocrab::models::events::payload::WorkflowRunEventAction,
     EventPayload,
 };
 
@@ -19,9 +18,6 @@ pub async fn run() {
 }
 
 async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
-    let octo = get_octo(Some(String::from(login)));
-    let issues = octo.issues(owner, repo);
-
     match payload {
         EventPayload::WorkflowRunEvent(e) => {
             if e.action == WorkflowRunEventAction::Completed {
@@ -32,6 +28,9 @@ async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
                     let name = workflow_run.name;
                     let run_number = workflow_run.run_number;
                     let title = format!("{conclusion} executing {name} run #{run_number}");
+
+                    let octo = get_octo(Some(String::from(login)));
+                    let issues = octo.issues(owner, repo);
 
                     match issues.create(title).send().await {
                         Ok(_) => {}
