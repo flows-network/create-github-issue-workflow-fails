@@ -9,7 +9,7 @@ use github_flows::{
 pub async fn run() {
     let login = "jaykchen";
     let owner = "jaykchen";
-    let repo = "a-test";
+    let repo = "vitesse-lite";
 
     listen_to_event(&login, &owner, &repo, vec!["workflow_run"], |payload| {
         handler(&login, &owner, &repo, payload)
