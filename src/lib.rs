@@ -18,6 +18,8 @@ pub async fn run() {
 }
 
 async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
+    let octo = get_octo(Some(String::from(login)));
+    let issues = octo.issues(owner, repo);
     match payload {
         EventPayload::WorkflowRunEvent(e) => {
             if e.action == WorkflowRunEventAction::Completed {
@@ -30,9 +32,6 @@ async fn handler(login: &str, owner: &str, repo: &str, payload: EventPayload) {
 
                     let title = format!("{conclusion} executing {name} run #{run_number}");
                     let body = workflow_run.html_url.to_string();
-
-                    let octo = get_octo(Some(String::from(login)));
-                    let issues = octo.issues(owner, repo);
 
                     match issues.create(title).send().await {
                         Ok(issue) => {
