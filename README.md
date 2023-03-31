@@ -1,5 +1,16 @@
-# A GitHub App that files an GitHub issue when user's workflow action fails
+# <p align="center">A GitHub App that files an GitHub issue when user's workflow action fails</p>
 
+<p align="center">
+  <a href="https://discord.gg/ccZn9ZMfFf">
+    <img src="https://img.shields.io/badge/chat-Discord-7289DA?logo=discord" alt="flows.network Discord">
+  </a>
+  <a href="https://twitter.com/flows_network">
+    <img src="https://img.shields.io/badge/Twitter-1DA1F2?logo=twitter&amp;logoColor=white" alt="flows.network Twitter">
+  </a>
+   <a href="https://flows.network/flow/new">
+    <img src="https://img.shields.io/website?up_message=deploy&url=https%3A%2F%2Fflows.network%2Fflow%2Fnew" alt="Create a flow">
+  </a>
+</p>
 
 [Deploy this function on flows.network](#deploy-this-bot-on-your-github-repo), and you will get a GitHub app that creating a GitHub issue automatically when the github workflow action fails. It helps maintainers and PR creators to track issue. The title of this issue is the name of your GitHub Action workflows.
 
